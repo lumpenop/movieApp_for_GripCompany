@@ -94,6 +94,7 @@ const Movie = () => {
                 data.map((element, index)=>{
                 return (
                   <MovieList 
+                    key={element.imdbID}
                     index={index}
                     element={element}
                     setIsClicked={setIsClicked}
