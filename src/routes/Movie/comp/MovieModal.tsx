@@ -1,4 +1,4 @@
-import styles from '../Movie.module.scss'
+import styles from '../movie.module.scss'
 
 import { IMovie } from 'types/movie.d'
 
@@ -10,7 +10,7 @@ interface Props {
   setIsClicked: Function
 }
 
-const MovieModal = ({isClicked, clickedData, setIsClicked}: Props) => {
+const MovieModal = ({ isClicked, clickedData, setIsClicked }: Props) => {
 
   const handleModalClick = () => {
     setIsClicked((prev: boolean) => !prev)

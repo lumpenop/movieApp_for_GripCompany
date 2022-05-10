@@ -1,4 +1,4 @@
-import styles from '../Movie.module.scss'
+import styles from '../movie.module.scss'
 
 import { IMovie } from 'types/movie.d'
 

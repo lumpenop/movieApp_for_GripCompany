@@ -1,4 +1,4 @@
-import styles from './Movie.module.scss'
+import styles from './movie.module.scss'
 
 import { useMount, useState, useRef, useEffect } from 'hooks'
 
@@ -11,8 +11,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import MovieList from './comp/MovieList'
 import MovieNav from './comp/MovieNav'
 import MovieModal from './comp/MovieModal'
-
-import { cx } from 'styles' 
 
 const Movie = () => {
 
@@ -98,7 +96,6 @@ const Movie = () => {
                   <MovieList 
                     index={index}
                     element={element}
-                    item={data} 
                     setIsClicked={setIsClicked}
                     setClickedIdx={setClickedIdx}
                   />

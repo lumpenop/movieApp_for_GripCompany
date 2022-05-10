@@ -1,22 +1,15 @@
-import styles from '../Movie.module.scss'
+import styles from '../movie.module.scss'
 
 import { IMovie } from 'types/movie.d'
 
-import { useState, useEffect, useRef, useMount } from 'hooks'
-
-import { getMovieApi } from 'services/getMovie'
-
-
-
 interface Props {
-  item: IMovie[]
   setIsClicked: Function
   setClickedIdx: Function
   element: IMovie
   index: number
 }
 
-const MovieList = ({ item, setIsClicked, setClickedIdx,  element, index }: Props): JSX.Element => {
+const MovieList = ({ setIsClicked, setClickedIdx,  element, index }: Props): JSX.Element => {
 
 
   const handleMovieClick = (idx: number) =>{
