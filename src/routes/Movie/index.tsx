@@ -1,8 +1,8 @@
 import styles from './Movie.module.scss'
 
-import { useMount, useState, useUnmount } from 'hooks'
+import { useMount, useState, useRef, useEffect } from 'hooks'
 
-import { IMovieAPIRes } from 'types/movie.d'
+import { IMovieAPIRes, IMovie } from 'types/movie.d'
 import { getMovieApi } from 'services/getMovie'
 
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
@@ -14,21 +14,56 @@ import MovieModal from './comp/MovieModal'
 
 import { cx } from 'styles' 
 
-
 const Movie = () => {
-  const [data, setData] = useState<IMovieAPIRes>()
+
+  const [data, setData] = useState<IMovie[]>([])
   const [isClicked, setIsClicked] = useState<boolean>(false)
   const [clickedIdx, setClickedIdx] = useState<number>(0)
+  const [pages, setPages] = useState<number>(0)
+  const [searchValue, setSearchValue] = useState<string>('')
+  const [io, setIo] = useState<IntersectionObserver|null>(null)
 
-  const handleSearchClick = () =>{
-    getMovieApi({
-      s: 'iron man',
-      page: 1,
+  const handleSearchClick = ()=>{
+    if(searchValue !== ''){
+      getMovieApi({
+        s: searchValue,
+        page: pages,
+      })
+      .then((res) => {
+        console.log(res.data)
+        
+        setData(data.concat(res.data.Search))
+      })
+      .catch(err=>{
+        console.log(err)
+      })
+    }
+  }
+  const movieList = useRef <HTMLDivElement>(null)
+  
+  useMount(()=>{
+    const targetIO = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setPages((prev: number)=>{
+            const next = prev+1
+            return next
+          })
+          if (io !== null) io.disconnect()
+        }
+      })
     })
-    .then((res) => {
-      console.log(res.data.Search)
-      setData(res.data)
-    })
+    setIo(targetIO)
+  })
+  io?.observe(movieList.current as Element)
+  useEffect(()=>{
+    console.log(pages)
+    console.log(data)
+    handleSearchClick()
+  },[pages])
+
+  const handleInputChange = (value: string) => {
+    setSearchValue(value)
   }
 
   // if (!data) return null
@@ -38,7 +73,12 @@ const Movie = () => {
       <h1 className={styles.hello}>Hello user</h1>
       <div className={styles.searchBox}>
         <FontAwesomeIcon className={styles.searchIcon} icon={faMagnifyingGlass} />
-        <input type='text' placeholder='Search' />
+        <input 
+          type='text' 
+          placeholder='Search'
+          onChange={(event)=>handleInputChange(event.currentTarget.value)}
+          value={searchValue}  
+        />
         <button
           onClick={handleSearchClick} 
           type='button' 
@@ -49,17 +89,28 @@ const Movie = () => {
       </div>
       <main className={styles.main}>
         <h1>Movies</h1>
-        {data
-          ? <MovieList 
-              item={data.Search} 
-              setIsClicked={setIsClicked}
-              setClickedIdx={setClickedIdx}
-            />
-          :'검색 결과가 없습니다'}
+        <div className={styles.movieListBox} >
+          <ul className={styles.movieList} >
+            {data.length !== 0
+              ? 
+                data.map((element, index)=>{
+                return (
+                  <MovieList 
+                    index={index}
+                    element={element}
+                    item={data} 
+                    setIsClicked={setIsClicked}
+                    setClickedIdx={setClickedIdx}
+                  />
+                )})
+              :'검색 결과가 없습니다'}
+              <div ref={movieList}>hi</div>
+          </ul>
+        </div>
         <MovieModal
           isClicked={isClicked}
           setIsClicked={setIsClicked}
-          clickedData={data?.Search[clickedIdx]} 
+          clickedData={data[clickedIdx]} 
         />
       </main>
       <MovieNav />
