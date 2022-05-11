@@ -137,8 +137,8 @@
         float: right;
 
         button {
-          width: 2rem;
-          height: 1.4rem;
+          width: 3rem;
+          height: 1.5rem;
           margin-left: 0.5rem;
           color: colors.$WHITE;
           background-color: colors.$GRAYD;
@@ -146,5 +146,26 @@
         }
       }
     }
+  }
+
+  .movieNav {
+    .buttonBox {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .navButton {
+      display: inline-block;
+      width: 50%;
+      height: 2.5rem;
+    }
+
+    .on {
+      background-color: colors.$WHITE;
+    }
+  }
+
+  .none {
+    display: none;
   }
 }

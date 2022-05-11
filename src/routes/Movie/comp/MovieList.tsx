@@ -2,15 +2,19 @@ import styles from '../movie.module.scss'
 
 import { IMovie } from 'types/movie.d'
 
+import { useRecoil } from 'hooks/state'
+import { movieClickState, movieClickedIdxState, movieTabNum, moviePages } from 'states/movieStates'
+
 interface Props {
-  setIsClicked: Function
-  setClickedIdx: Function
-  element: IMovie
-  index: number
+  data: IMovie[]
 }
 
-const MovieList = ({ setIsClicked, setClickedIdx,  element, index }: Props): JSX.Element => {
+const MovieList = ({data}: Props): JSX.Element => {
 
+  const [, setIsClicked] = useRecoil(movieClickState)
+  const [, setClickedIdx] = useRecoil(movieClickedIdxState)
+  const [tabNum, ] = useRecoil(movieTabNum)
+  const [pages, setPages] = useRecoil(moviePages)
 
   const handleMovieClick = (idx: number) =>{
     setIsClicked((prev: boolean) => !prev)
@@ -19,27 +23,36 @@ const MovieList = ({ setIsClicked, setClickedIdx,  element, index }: Props): JSX
 
   return (
     <div>
-      <button 
-          type='button' 
-          key={element.imdbID}
-          onClick={()=>handleMovieClick(index)} 
-      >
-        <li 
-          className={styles.movie} 
-        >
-          <div className={styles.moviePosterBox}>
-            <img className={styles.moviePoster} src={element.Poster} alt="img" />
-          </div>
-          
-          <dl className={styles.contents}>
-            <h1>{element.Title}</h1>
-            <dt>year : </dt>
-            <dd>{element.Year}</dd>
-            <dt>type : </dt>
-            <dd>{element.Type}</dd>
-          </dl>
-        </li>
-      </button>
+      <ul className={styles.movieList} >
+        {
+              data.length !== 0
+              ? 
+                data.map((element, index)=>{
+                  return (
+                    <button 
+                      type='button' 
+                      key={`${element.imdbID}${index}`}
+                      onClick={()=>handleMovieClick(index)} 
+                    >
+                      <li 
+                  className={styles.movie} 
+                >
+                        <div className={styles.moviePosterBox}>
+                          <img className={styles.moviePoster} src={element.Poster} alt="img" />
+                        </div>
+                  
+                        <dl className={styles.contents}>
+                          <h1>{element.Title }({element.Year})</h1>
+                          <dt>type : </dt>
+                          <dd>{element.Type}</dd>
+                        </dl>
+                      </li>
+                    </button>
+
+                  )})
+              :'검색 결과가 없습니다'
+            }
+      </ul>
     </div>
   )
 }

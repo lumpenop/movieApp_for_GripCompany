@@ -3,14 +3,22 @@ import styles from '../movie.module.scss'
 import { IMovie } from 'types/movie.d'
 
 import { cx } from 'styles' 
+import { MouseEventHandler } from 'react'
+
+import { useRecoil } from 'hooks/state'
+import {  movieClickState, movieTabNum } from 'states/movieStates'
+
+
 
 interface Props {
-  isClicked: boolean
   clickedData: IMovie | undefined
-  setIsClicked: Function
+  handleLikeClick: MouseEventHandler
 }
 
-const MovieModal = ({ isClicked, clickedData, setIsClicked }: Props) => {
+const MovieModal = ({ clickedData, handleLikeClick }: Props) => {
+
+  const [isClicked, setIsClicked] = useRecoil(movieClickState)
+  const [tabNum, setTabNum] = useRecoil(movieTabNum)
 
   const handleModalClick = () => {
     setIsClicked((prev: boolean) => !prev)
@@ -27,7 +35,9 @@ const MovieModal = ({ isClicked, clickedData, setIsClicked }: Props) => {
           <h1>{clickedData?.Title}</h1>
         </div>
         <div className={styles.modalBtnBox}>
-          <button type='button'>like</button>
+          <button type='button' onClick={handleLikeClick} >
+            {tabNum===0 ? 'like' : 'unLike'}
+          </button>
           <button type='button' onClick={handleModalClick} >X</button>
         </div>
       </div>

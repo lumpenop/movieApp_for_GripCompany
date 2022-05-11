@@ -1,8 +1,8 @@
 import { axios } from 'hooks/worker'
 import { IMovieAPIRes } from 'types/movie.d'
 
-const MOVIE_URL = 'http://www.omdbapi.com'
-const API_KEY = '92e32667'
+const MOVIE_URL = process.env.REACT_APP_MOVIE_URL
+const API_KEY = process.env.REACT_APP_API_KEY
 
 interface Params {
   s: string
