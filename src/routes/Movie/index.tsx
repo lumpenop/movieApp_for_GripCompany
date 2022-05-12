@@ -15,22 +15,44 @@ import { getMovieApi } from 'services/getMovie'
 import { IMovie } from 'types/movie'
 
 import { useRecoil } from 'hooks/state'
-import { movieClickedIdxState, movieTabNum, favoriteData, moviePages } from 'states/movieStates'
+import { movieClickedIdxState, favoriteData, moviePages, movieDataState } from 'states/movieStates'
+import { FormEvent } from 'react'
+
+import { useParams } from 'react-router-dom'
+
+import bittersweetForNoImg from 'assets/movies/bittersweet.jpeg'
 
 let result : IMovie[]
 
 const Movie = () => {
 
+  const params = useParams()
+
   const [clickedIdx, ] = useRecoil(movieClickedIdxState)
-  const [data, setData ] = useState<IMovie[]>([])
+  const [data, setData ] = useRecoil(movieDataState)
   const [favoData, setFavoData] = useRecoil(favoriteData)
   
   const [pages, setPages] = useRecoil(moviePages)
   const [searchValue, setSearchValue] = useState<string>('')
-  const [tabNum, ] = useRecoil(movieTabNum)
   const [io, setIo] = useState<IntersectionObserver|null>(null)
+
+  const [isEnd, setIsEnd] = useState<boolean>(false)
+
+  const [isSearchCliked, setIsSearchClicked] = useState<boolean>(false)
   
   const movieList = useRef <HTMLDivElement>(null)
+
+  const isPoster = (prev: IMovie[]) =>{
+    const postData = prev.map(element=>{
+      if(element.Poster === 'N/A'){
+        const newEle = {...element}
+        newEle.Poster = bittersweetForNoImg
+        return newEle
+      }
+      return element
+    })
+    return postData
+  }
 
   useMount(()=>{
     const targetIO = new IntersectionObserver(entries => {
@@ -42,15 +64,11 @@ const Movie = () => {
           })
           if (io !== null) io.disconnect()
         }
-      })
+      },{threshold: 1.0})
     })
     setIo(targetIO)
   })
   io?.observe(movieList.current as Element)
-
-  const handleLikeClick = () =>{
-    store.set(data[clickedIdx].imdbID, JSON.stringify(data[clickedIdx]))
-  }
 
   const hanleFavoriteTabClick = () =>{
     result = []
@@ -60,43 +78,59 @@ const Movie = () => {
     setFavoData(result)
   }
 
-  const handleSearchClick = () => {
-    if(searchValue !== ''){
-      getMovieApi({
+  const getAPIData = () =>{
+    getMovieApi({
         s: searchValue,
         page: pages,
       })
       .then((res) => {
-        if(res.data.Search === undefined) return
-        setData(prev=>[...prev].concat(res.data.Search))
+        if(res.data.Search === undefined) {
+          setIsEnd(true)
+          return
+        }
+        setIsEnd(false)
+        setData(prev=>[...prev].concat(isPoster(res.data.Search)))
       })
       .catch(err=>{
         if(err.response === 'false') return
         console.log(err)
       })
+  }
+
+  const handleSearchClick = (event: FormEvent | undefined) => {
+    setTimeout(()=>{
+      setIsSearchClicked(prev => !prev)
+    }, 300)
+    if(searchValue !== ''){
+      if(event !== undefined){
+        event.preventDefault()
+        setTimeout(() => {
+          setData(()=>[])
+          setPages(()=>0)
+        }, 200 )
+      }
+    getAPIData()
     }
   }
   
   useEffect(()=>{
-    handleSearchClick()
+    if(pages > 0){
+      handleSearchClick(undefined)
+    }
   },[pages])
 
   const handleInputChange = (value: string) => {
     setSearchValue(value)
   }
   // if (!data) return null
+
   return (
     <div className={styles.movieContainer}>
       <h1 className={styles.hello}>Hello user</h1>
-      <div className={styles.searchBox}>
+      <header className={styles.searchBox}>
         <FontAwesomeIcon className={styles.searchIcon} icon={faMagnifyingGlass} />
         <form onSubmit={(event)=> {
-            event.preventDefault()
-            setTimeout(() => {
-              setData(()=>[])
-              setPages(()=>0)
-            }, 200 )
-            handleSearchClick()
+            handleSearchClick(event)
           }
         }>
           <input 
@@ -112,31 +146,36 @@ const Movie = () => {
             검색
           </button>
         </form>
-      </div>
+      </header>
       <main className={styles.main}>
         <h1>Movies</h1>
         <div className={styles.movieListBox} >
           <ul className={styles.movieList} >
-            {
-              data.length !== 0
-              ? <MovieList data={tabNum===0? data : favoData}/>
-              : '검색 결과가 없습니다'
+            { 
+              data.length !== 0 || params?.favorite
+              ? <MovieList data={!params?.favorite ? data : favoData}/>
+              : <p>{isSearchCliked ? '검색 결과가 없습니다' : ''}</p>
             }
             <div 
-              className={cx({[styles.none]: tabNum===1})}
-              ref={movieList}>  
-              hi
+              className={cx(styles.lastOne, 
+                {[styles.none]: params?.favorite},
+                {[styles.isEnd]: isEnd}
+              )}
+              ref={movieList}> 
+              { isEnd ? '검색 결과가 없습니다' : ''}
             </div>
           </ul>
         </div>
         <MovieModal
-          handleLikeClick={handleLikeClick}
-          clickedData={data[clickedIdx]} 
+          clickedData={!params?.favorite? data[clickedIdx] : favoData[clickedIdx]}
+          hanleFavoriteTabClick={hanleFavoriteTabClick}
         />
       </main>
-      <MovieNav 
-        hanleFavoriteTabClick={hanleFavoriteTabClick}
-      />
+      <footer>
+        <MovieNav 
+          hanleFavoriteTabClick={hanleFavoriteTabClick}
+        />
+      </footer>
     </div>
   )
 }

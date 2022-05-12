@@ -4,7 +4,9 @@ import styles from '../movie.module.scss'
 import { cx } from 'styles'
 
 import { useRecoil } from 'hooks/state'
-import { movieTabNum } from 'states/movieStates'
+import { movieClickState } from 'states/movieStates'
+
+import {NavLink, useParams} from 'react-router-dom'
 
 interface Props {
   hanleFavoriteTabClick: Function
@@ -12,12 +14,12 @@ interface Props {
 
 const MovieNav = ({ hanleFavoriteTabClick }: Props) => {
 
-  const [tabNum, setTabNum] = useRecoil(movieTabNum)
+  const params = useParams()
 
-  const handleTabClick = (event: MouseEvent<HTMLButtonElement>): void => {
-    setTabNum(Number(event.currentTarget.value))
-    if(Number(event.currentTarget.value)===tabNum) return
- 
+  const [, setIsClicked] = useRecoil(movieClickState)
+
+  const handleTabClick = (): void => {
+    setIsClicked(false)
     hanleFavoriteTabClick()
     
   }
@@ -25,20 +27,20 @@ const MovieNav = ({ hanleFavoriteTabClick }: Props) => {
   return (
     <nav className={styles.movieNav}>
       <div className={styles.buttonBox}>
-        <button 
-          className={cx(styles.navButton, {[styles.on]: tabNum===0})} 
+        <NavLink
+          to=''
+          className={cx(styles.navButton, {[styles.on]: !params?.favorite})} 
           type='button'
           onClick={handleTabClick}
-          value={0}
         >Home
-        </button>
-        <button 
-          className={cx(styles.navButton, {[styles.on]: tabNum===1})} 
+        </NavLink>
+        <NavLink 
+          to='favorite'
+          className={cx(styles.navButton, {[styles.on]: params?.favorite})} 
           type='button'
           onClick={handleTabClick}
-          value={1}
         >Favorite
-        </button>
+        </NavLink>
       </div>
     </nav>
   )

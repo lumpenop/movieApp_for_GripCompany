@@ -3,24 +3,39 @@ import styles from '../movie.module.scss'
 import { IMovie } from 'types/movie.d'
 
 import { cx } from 'styles' 
-import { MouseEventHandler } from 'react'
 
 import { useRecoil } from 'hooks/state'
-import {  movieClickState, movieTabNum } from 'states/movieStates'
+import { movieClickedIdxState, movieDataState, movieClickState } from 'states/movieStates'
 
+import store from 'storejs'
+import { useParams } from 'react-router-dom'
 
 
 interface Props {
   clickedData: IMovie | undefined
-  handleLikeClick: MouseEventHandler
+  hanleFavoriteTabClick: Function
 }
 
-const MovieModal = ({ clickedData, handleLikeClick }: Props) => {
+const MovieModal = ({ clickedData, hanleFavoriteTabClick }: Props) => {
+
+  const params = useParams()
 
   const [isClicked, setIsClicked] = useRecoil(movieClickState)
-  const [tabNum, setTabNum] = useRecoil(movieTabNum)
+
+  const handleLikeClick = () => {
+    if(params?.favorite){
+      store.remove(`${clickedData?.imdbID}`)
+      hanleFavoriteTabClick()
+      handleModalClick()
+    }else{
+      const clicked = clickedData
+      console.log(clicked)
+      store.set(`${clicked?.imdbID}`, JSON.stringify(clicked))
+    }
+  }
 
   const handleModalClick = () => {
+    console.log()
     setIsClicked((prev: boolean) => !prev)
   }
   
@@ -36,7 +51,7 @@ const MovieModal = ({ clickedData, handleLikeClick }: Props) => {
         </div>
         <div className={styles.modalBtnBox}>
           <button type='button' onClick={handleLikeClick} >
-            {tabNum===0 ? 'like' : 'unLike'}
+            {!params?.favorite ? 'like' : 'unLike'}
           </button>
           <button type='button' onClick={handleModalClick} >X</button>
         </div>
