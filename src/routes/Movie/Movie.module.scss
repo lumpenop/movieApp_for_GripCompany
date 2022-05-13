@@ -5,11 +5,12 @@
   width: $width;
   height: $width * 3.6 / 2;
   padding: 2rem;
-  color: colors.$WHITE;
+  color: colors.$GRAYE;
   background-color: colors.$BIG_TITLE;
   border-radius: 2rem;
 
   h1 {
+    display: inline-block;
     padding: 0.5rem 0;
     font-size: 16px;
   }
@@ -41,6 +42,56 @@
   .main {
     position: relative;
     padding: 0.5rem 0;
+
+    .dropContainer {
+      position: relative;
+      display: inline-block;
+
+      > button {
+        padding: 0.4rem 0.2rem;
+        margin-left: 2rem;
+      }
+
+      input[type='text'] {
+        width: 9rem;
+        font-size: 12px;
+        color: colors.$GRAYD;
+        cursor: pointer;
+      }
+
+      .dropIcon {
+        color: colors.$WHITE;
+      }
+
+      .dropMenuList {
+        position: absolute;
+        top: 100%;
+        right: 0%;
+        z-index: 1;
+        display: none;
+        width: 8rem;
+        overflow: hidden;
+        background-color: colors.$TEAL;
+        border-radius: 0.6rem;
+
+        &.menuOn {
+          display: block;
+        }
+      }
+
+      .dropMenu {
+        width: 100%;
+        padding: 0.5rem 0.8rem;
+
+        > div > input {
+          color: colors.$GRAYE;
+        }
+
+        &:hover {
+          background-color: colors.$TASK_ITEM_TITLE;
+        }
+      }
+    }
 
     .movieListBox {
       height: 22rem;

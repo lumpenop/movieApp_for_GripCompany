@@ -1,18 +1,16 @@
-
 import styles from '../movie.module.scss'
 import { cx } from 'styles'
 
 import { useRecoil } from 'hooks/state'
 import { movieClickState } from 'states/movieStates'
 
-import {NavLink, useParams} from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 
 interface Props {
   hanleFavoriteTabClick: Function
 }
 
 const MovieNav = ({ hanleFavoriteTabClick }: Props) => {
-
   const params = useParams()
   const [, setIsClicked] = useRecoil(movieClickState)
 
@@ -26,17 +24,19 @@ const MovieNav = ({ hanleFavoriteTabClick }: Props) => {
       <div className={styles.buttonBox}>
         <NavLink
           to=''
-          className={cx(styles.navButton, {[styles.on]: !params?.favorite})} 
+          className={cx(styles.navButton, { [styles.on]: !params?.favorite })}
           type='button'
           onClick={handleTabClick}
-        >Home
+        >
+          Home
         </NavLink>
-        <NavLink 
+        <NavLink
           to='favorite'
-          className={cx(styles.navButton, {[styles.on]: params?.favorite})} 
+          className={cx(styles.navButton, { [styles.on]: params?.favorite })}
           type='button'
           onClick={handleTabClick}
-        >Favorite
+        >
+          Favorite
         </NavLink>
       </div>
     </nav>

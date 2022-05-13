@@ -1,8 +1,5 @@
-
-   
 import { atom } from 'hooks/state'
 import { IMovie } from 'types/movie'
-
 
 export const movieDataState = atom<IMovie[]>({
   key: '#movieDataState',
@@ -11,25 +8,25 @@ export const movieDataState = atom<IMovie[]>({
 
 export const movieClickState = atom<boolean>({
   key: '#movieClickState',
-  default: false
+  default: false,
 })
 
 export const movieClickedIdxState = atom<number>({
   key: '#movieClickedIdxState',
-  default: 0
+  default: 0,
 })
 
 export const movieTabNum = atom<number>({
   key: '#movieTabNum',
-  default: 0
+  default: 0,
 })
 
 export const favoriteData = atom<IMovie[]>({
   key: '#favoriteData',
-  default: []
+  default: [],
 })
 
 export const moviePages = atom<number>({
   key: '#moviePages',
-  default: 0
+  default: 0,
 })
