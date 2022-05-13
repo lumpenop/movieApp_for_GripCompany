@@ -67,6 +67,10 @@
         transform: rotate(135deg);
       }
 
+      &.favoMovie {
+        background-color: colors.$WHITE;
+      }
+
       .contents {
         display: inline-block;
         width: 80%;

@@ -1,5 +1,7 @@
 
 import { useMount, useState, useEffect, useRef } from 'hooks'
+import { flushSync } from 'react-dom'
+import { FormEvent } from 'react'
 import store from 'storejs'
 
 import styles from './movie.module.scss'
@@ -15,8 +17,7 @@ import { getMovieApi } from 'services/getMovie'
 import { IMovie } from 'types/movie'
 
 import { useRecoil } from 'hooks/state'
-import { movieClickedIdxState, favoriteData, moviePages, movieDataState } from 'states/movieStates'
-import { FormEvent } from 'react'
+import { movieClickedIdxState, favoriteData, movieDataState } from 'states/movieStates'
 
 import { useParams } from 'react-router-dom'
 
@@ -32,7 +33,7 @@ const Movie = () => {
   const [data, setData ] = useRecoil(movieDataState)
   const [favoData, setFavoData] = useRecoil(favoriteData)
   
-  const [pages, setPages] = useRecoil(moviePages)
+  const [pages, setPages] = useState<number>(0)
   const [searchValue, setSearchValue] = useState<string>('')
   const [io, setIo] = useState<IntersectionObserver|null>(null)
 
@@ -51,17 +52,16 @@ const Movie = () => {
       }
       return element
     })
+
     return postData
   }
 
   useMount(()=>{
+    hanleFavoriteTabClick()
     const targetIO = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          setPages((prev: number)=>{
-            const next = prev+1
-            return next
-          })
+          setPages(prev => prev+1)
           if (io !== null) io.disconnect()
         }
       },{threshold: 1.0})
@@ -69,53 +69,68 @@ const Movie = () => {
     setIo(targetIO)
   })
   io?.observe(movieList.current as Element)
-
+  
   const hanleFavoriteTabClick = () =>{
     result = []
     store.forEach((k, d) => {
       result.push(JSON.parse(d))
     })
-    setFavoData(result)
+    setFavoData(()=>result)
   }
 
-  const getAPIData = () =>{
-    getMovieApi({
+  const getAPIData = (page: number) =>{
+    console.log(pages, isEnd)
+    setTimeout(()=>{
+      getMovieApi({
         s: searchValue,
-        page: pages,
+        page,
       })
       .then((res) => {
         if(res.data.Search === undefined) {
           setIsEnd(true)
-          return
+        }else{
+          const newData = isPoster(res.data.Search)
+          setData(prev=>[...prev].concat(newData))
+          setIsEnd(false)
         }
-        setIsEnd(false)
-        setData(prev=>[...prev].concat(isPoster(res.data.Search)))
+        
       })
       .catch(err=>{
         if(err.response === 'false') return
         console.log(err)
       })
+    }, 150)
   }
 
-  const handleSearchClick = (event: FormEvent | undefined) => {
-    setTimeout(()=>{
-      setIsSearchClicked(prev => !prev)
-    }, 300)
+  const handleSearchClick = (event: FormEvent) => {
+    event.preventDefault()
+    setIsEnd(false)
+    setPages(1)
     if(searchValue !== ''){
-      if(event !== undefined){
-        event.preventDefault()
-        setTimeout(() => {
-          setData(()=>[])
-          setPages(()=>0)
-        }, 200 )
+      if(isSearchCliked){
+        flushSync(()=>{
+          setData([])
+        })
       }
-    getAPIData()
+      setIsSearchClicked(true)
     }
   }
+
+  const handleScrollSearch = () =>{
+    if(searchValue !== ''){
+      getAPIData(pages)
+    }
+  }
+
+  useEffect(()=>{
+    if(isSearchCliked){
+      getAPIData(1)
+    }
+  }, [isSearchCliked])
   
   useEffect(()=>{
-    if(pages > 0){
-      handleSearchClick(undefined)
+    if(pages > 0 && !isEnd){
+      handleScrollSearch()
     }
   },[pages])
 
@@ -129,10 +144,7 @@ const Movie = () => {
       <h1 className={styles.hello}>Hello user</h1>
       <header className={styles.searchBox}>
         <FontAwesomeIcon className={styles.searchIcon} icon={faMagnifyingGlass} />
-        <form onSubmit={(event)=> {
-            handleSearchClick(event)
-          }
-        }>
+        <form onSubmit={handleSearchClick}>
           <input 
             type='text' 
             placeholder='Search'
@@ -148,13 +160,17 @@ const Movie = () => {
         </form>
       </header>
       <main className={styles.main}>
-        <h1>Movies</h1>
+        <div>
+          {params?.favorite!=='favorite' 
+            ? <h1>Movies</h1>
+            : <h1>즐겨찾기</h1>}
+        </div>  
         <div className={styles.movieListBox} >
-          <ul className={styles.movieList} >
+          <div className={styles.movieList} >
             { 
-              data.length !== 0 || params?.favorite
+              data.length !== 0 || favoData.length !== 0
               ? <MovieList data={!params?.favorite ? data : favoData}/>
-              : <p>{isSearchCliked ? '검색 결과가 없습니다' : ''}</p>
+              : ''
             }
             <div 
               className={cx(styles.lastOne, 
@@ -162,9 +178,9 @@ const Movie = () => {
                 {[styles.isEnd]: isEnd}
               )}
               ref={movieList}> 
-              { isEnd ? '검색 결과가 없습니다' : ''}
+              {(isEnd || !isSearchCliked) && params?.favorite!=='favorite' ? '검색 결과가 없습니다' : ''}
             </div>
-          </ul>
+          </div>
         </div>
         <MovieModal
           clickedData={!params?.favorite? data[clickedIdx] : favoData[clickedIdx]}

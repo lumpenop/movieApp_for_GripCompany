@@ -29,13 +29,12 @@ const MovieModal = ({ clickedData, hanleFavoriteTabClick }: Props) => {
       handleModalClick()
     }else{
       const clicked = clickedData
-      console.log(clicked)
       store.set(`${clicked?.imdbID}`, JSON.stringify(clicked))
     }
+    setIsClicked(false)
   }
 
   const handleModalClick = () => {
-    console.log()
     setIsClicked((prev: boolean) => !prev)
   }
   

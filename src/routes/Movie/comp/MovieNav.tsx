@@ -1,4 +1,3 @@
-import {  MouseEvent } from 'react'
 
 import styles from '../movie.module.scss'
 import { cx } from 'styles'
@@ -15,13 +14,11 @@ interface Props {
 const MovieNav = ({ hanleFavoriteTabClick }: Props) => {
 
   const params = useParams()
-
   const [, setIsClicked] = useRecoil(movieClickState)
 
   const handleTabClick = (): void => {
     setIsClicked(false)
     hanleFavoriteTabClick()
-    
   }
 
   return (
