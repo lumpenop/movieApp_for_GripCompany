@@ -16,7 +16,7 @@ import { getMovieApi } from 'services/getMovie'
 import { IMovie } from 'types/movie'
 
 import { useRecoil } from 'hooks/state'
-import { movieClickedIdxState, favoriteData, movieDataState } from 'states/movieStates'
+import { movieClickedIdxState, favoriteData, movieDataState, movieSortYear, movieSortTitle } from 'states/movieStates'
 
 import { useParams } from 'react-router-dom'
 
@@ -30,6 +30,8 @@ const Movie = () => {
   const [clickedIdx] = useRecoil(movieClickedIdxState)
   const [data, setData] = useRecoil(movieDataState)
   const [favoData, setFavoData] = useRecoil(favoriteData)
+  const [year] = useRecoil(movieSortYear)
+  const [title] = useRecoil(movieSortTitle)
 
   const [pages, setPages] = useState<number>(0)
   const [searchValue, setSearchValue] = useState<string>('')
@@ -40,6 +42,10 @@ const Movie = () => {
   const [isSearchCliked, setIsSearchClicked] = useState<boolean>(false)
 
   const movieList = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setFavoData(favoSort(favoData))
+  }, [year, title])
 
   const isPoster = (prev: IMovie[]) => {
     const postData = prev.map((element) => {
@@ -72,7 +78,7 @@ const Movie = () => {
     store.forEach((k, d) => {
       result.push(JSON.parse(d))
     })
-    setFavoData(() => result)
+    setFavoData(favoSort(result))
   }
 
   const getAPIData = (page: number) => {
@@ -100,13 +106,37 @@ const Movie = () => {
   const handleSearchClick = (event: FormEvent) => {
     event.preventDefault()
     setIsEnd(false)
-    setPages(1)
+    setPages(0)
     if (searchValue !== '') {
       if (isSearchCliked) {
         setData([])
       }
       setIsSearchClicked(true)
     }
+  }
+
+  const favoSort = (localData: IMovie[]) => {
+    const sortedFavo = [...localData].sort((a: IMovie, b: IMovie): number => {
+      if (year === '내림차순') {
+        if (a.Year > b.Year) return -1
+        if (a.Year < b.Year) return 1
+      }
+      if (year === '오름차순') {
+        if (a.Year > b.Year) return 1
+        if (a.Year < b.Year) return -1
+      }
+      if (title === '내림차순') {
+        if (a.Title > b.Title) return -1
+        if (a.Title < b.Title) return 1
+      }
+      if (title === '오름차순') {
+        if (a.Title > b.Title) return 1
+        if (a.Title < b.Title) return -1
+      }
+      return 0
+    })
+    console.log(sortedFavo)
+    return sortedFavo
   }
 
   const handleScrollSearch = () => {

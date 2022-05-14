@@ -2,7 +2,6 @@ import styles from '../movie.module.scss'
 
 import { IMovie } from 'types/movie.d'
 
-import { useState } from 'react'
 import { useRecoil } from 'hooks/state'
 import { movieClickState, movieClickedIdxState } from 'states/movieStates'
 import store from 'storejs'

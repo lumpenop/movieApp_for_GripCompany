@@ -4,21 +4,14 @@ import { useMount } from 'react-use'
 import styles from '../movie.module.scss'
 
 import { useRecoil } from 'hooks/state'
-import { favoriteData } from 'states/movieStates'
 import { IMovie } from 'types/movie'
+
+import { favoriteData, movieSortYear, movieSortTitle } from 'states/movieStates'
 
 const MovieDropDown = () => {
   const [favoData, setFavoData] = useRecoil(favoriteData)
-  const [year, setYear] = useState<string>('내림차순')
-  const [title, setTitle] = useState<string>('오름차순')
-
-  useMount(() => {
-    favoSort()
-  })
-
-  useEffect(() => {
-    favoSort()
-  }, [year, title])
+  const [year, setYear] = useRecoil(movieSortYear)
+  const [title, setTitle] = useRecoil(movieSortTitle)
 
   const handleYearSelect = (event: { currentTarget: { value: SetStateAction<string> } }) => {
     setYear(event.currentTarget.value)
@@ -26,30 +19,6 @@ const MovieDropDown = () => {
 
   const handleTitleSelect = (event: { currentTarget: { value: SetStateAction<string> } }) => {
     setTitle(event.currentTarget.value)
-  }
-
-  const favoSort = () => {
-    const sortedFavo = [...favoData].sort((a: IMovie, b: IMovie): number => {
-      if (year === '내림차순') {
-        if (a.Year > b.Year) return -1
-        if (a.Year < b.Year) return 1
-      }
-      if (year === '오름차순') {
-        if (a.Year > b.Year) return 1
-        if (a.Year < b.Year) return -1
-      }
-      if (title === '내림차순') {
-        if (a.Title > b.Title) return -1
-        if (a.Title < b.Title) return 1
-      }
-      if (title === '오름차순') {
-        if (a.Title > b.Title) return 1
-        if (a.Title < b.Title) return -1
-      }
-      return 0
-    })
-
-    setFavoData(sortedFavo)
   }
 
   return (

@@ -30,3 +30,13 @@ export const moviePages = atom<number>({
   key: '#moviePages',
   default: 0,
 })
+
+export const movieSortYear = atom<string>({
+  key: '#movieSortYear',
+  default: '내림차순',
+})
+
+export const movieSortTitle = atom<string>({
+  key: '#movieSortTitle',
+  default: '오름차순',
+})
