@@ -7,16 +7,16 @@ import { movieClickState } from 'states/movieStates'
 import { NavLink, useParams } from 'react-router-dom'
 
 interface Props {
-  hanleFavoriteTabClick: Function
+  handleFavoriteTabClick: Function
 }
 
-const MovieNav = ({ hanleFavoriteTabClick }: Props) => {
+const MovieNav = ({ handleFavoriteTabClick }: Props) => {
   const params = useParams()
   const [, setIsClicked] = useRecoil(movieClickState)
 
   const handleTabClick = (): void => {
     setIsClicked(false)
-    hanleFavoriteTabClick()
+    handleFavoriteTabClick()
   }
 
   return (

@@ -6,18 +6,17 @@ import { cx } from 'styles'
 
 import { useRecoil } from 'hooks/state'
 import { useEffect, useState } from 'react'
-import { favoriteData, movieClickState } from 'states/movieStates'
+import { movieClickState } from 'states/movieStates'
 
 import store from 'storejs'
 import { useParams } from 'react-router-dom'
-import { useMount } from 'hooks'
 
 interface Props {
   clickedData: IMovie
-  hanleFavoriteTabClick: Function
+  handleFavoriteTabClick: Function
 }
 
-const MovieModal = ({ clickedData, hanleFavoriteTabClick }: Props) => {
+const MovieModal = ({ clickedData, handleFavoriteTabClick }: Props) => {
   const params = useParams()
 
   const [isClicked, setIsClicked] = useRecoil(movieClickState)
@@ -33,9 +32,8 @@ const MovieModal = ({ clickedData, hanleFavoriteTabClick }: Props) => {
 
   const handleLikeClick = () => {
     if (buttonValue === 'unLike') {
-      console.log(buttonValue)
       store.remove(`${clickedData?.imdbID}`)
-      hanleFavoriteTabClick()
+      handleFavoriteTabClick()
       handleModalClick()
     } else {
       const clicked = clickedData

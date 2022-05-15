@@ -1,26 +1,28 @@
-import { useMount, useState, useEffect, useRef } from 'hooks'
 import { FormEvent } from 'react'
+import { useMount, useState, useEffect, useRef } from 'hooks'
+import { useRecoil } from 'hooks/state'
+import {
+  movieClickedIdxState,
+  favoriteData,
+  movieDataState,
+  movieSortTitle,
+  movieSearchValue,
+} from 'states/movieStates'
+import { useParams } from 'react-router-dom'
+
 import store from 'storejs'
 
 import styles from './movie.module.scss'
 import { cx } from 'styles'
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import MovieList from './comp/MovieList'
 import MovieNav from './comp/MovieNav'
 import MovieModal from './comp/MovieModal'
 import MovieDropDown from './comp/MovieDropDown'
+import Header from './comp/Header'
 
-import { getMovieApi } from 'services/getMovie'
+import { getMovieApi, favoSort, isPoster } from 'services/getMovie'
 import { IMovie } from 'types/movie'
-
-import { useRecoil } from 'hooks/state'
-import { movieClickedIdxState, favoriteData, movieDataState, movieSortYear, movieSortTitle } from 'states/movieStates'
-
-import { useParams } from 'react-router-dom'
-
-import bittersweetForNoImg from 'assets/movies/bittersweet.jpeg'
 
 let result: IMovie[]
 
@@ -30,37 +32,19 @@ const Movie = () => {
   const [clickedIdx] = useRecoil(movieClickedIdxState)
   const [data, setData] = useRecoil(movieDataState)
   const [favoData, setFavoData] = useRecoil(favoriteData)
-  const [year] = useRecoil(movieSortYear)
   const [title] = useRecoil(movieSortTitle)
 
   const [pages, setPages] = useState<number>(0)
-  const [searchValue, setSearchValue] = useState<string>('')
+  const [searchValue] = useRecoil(movieSearchValue)
+
   const [io, setIo] = useState<IntersectionObserver | null>(null)
-
   const [isEnd, setIsEnd] = useState<boolean>(false)
-
   const [isSearchCliked, setIsSearchClicked] = useState<boolean>(false)
 
   const movieList = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    setFavoData(favoSort(favoData))
-  }, [year, title])
-
-  const isPoster = (prev: IMovie[]) => {
-    const postData = prev.map((element) => {
-      if (element.Poster === 'N/A') {
-        const newEle = { ...element }
-        newEle.Poster = bittersweetForNoImg
-        return newEle
-      }
-      return element
-    })
-    return postData
-  }
-
   useMount(() => {
-    hanleFavoriteTabClick()
+    handleFavoriteTabClick()
     const targetIO = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -73,12 +57,12 @@ const Movie = () => {
   })
   io?.observe(movieList.current as Element)
 
-  const hanleFavoriteTabClick = () => {
+  const handleFavoriteTabClick = () => {
     result = []
     store.forEach((k, d) => {
       result.push(JSON.parse(d))
     })
-    setFavoData(favoSort(result))
+    setFavoData(favoSort(title, result))
   }
 
   const getAPIData = (page: number) => {
@@ -115,30 +99,6 @@ const Movie = () => {
     }
   }
 
-  const favoSort = (localData: IMovie[]) => {
-    const sortedFavo = [...localData].sort((a: IMovie, b: IMovie): number => {
-      if (year === '내림차순') {
-        if (a.Year > b.Year) return -1
-        if (a.Year < b.Year) return 1
-      }
-      if (year === '오름차순') {
-        if (a.Year > b.Year) return 1
-        if (a.Year < b.Year) return -1
-      }
-      if (title === '내림차순') {
-        if (a.Title > b.Title) return -1
-        if (a.Title < b.Title) return 1
-      }
-      if (title === '오름차순') {
-        if (a.Title > b.Title) return 1
-        if (a.Title < b.Title) return -1
-      }
-      return 0
-    })
-    console.log(sortedFavo)
-    return sortedFavo
-  }
-
   const handleScrollSearch = () => {
     if (searchValue !== '') {
       getAPIData(pages)
@@ -157,28 +117,9 @@ const Movie = () => {
     }
   }, [pages])
 
-  const handleInputChange = (value: string) => {
-    setSearchValue(value)
-  }
-  // if (!data) return null
-
   return (
     <div className={styles.movieContainer}>
-      <h1 className={styles.hello}>Hello user</h1>
-      <header className={styles.searchBox}>
-        <FontAwesomeIcon className={styles.searchIcon} icon={faMagnifyingGlass} />
-        <form action='/' onSubmit={handleSearchClick}>
-          <input
-            type='text'
-            placeholder='Search'
-            onChange={(event) => handleInputChange(event.currentTarget.value)}
-            value={searchValue}
-          />
-          <button type='submit' className={styles.searchBtn}>
-            검색
-          </button>
-        </form>
-      </header>
+      <Header handleSearchClick={handleSearchClick} />
       <main className={styles.main}>
         <h1>{params?.favorite !== 'favorite' ? 'Movies' : 'favorites'}</h1>
         {params?.favorite !== 'favorite' ? '' : <MovieDropDown />}
@@ -195,11 +136,11 @@ const Movie = () => {
         </div>
         <MovieModal
           clickedData={!params?.favorite ? data[clickedIdx] : favoData[clickedIdx]}
-          hanleFavoriteTabClick={hanleFavoriteTabClick}
+          handleFavoriteTabClick={handleFavoriteTabClick}
         />
       </main>
       <footer>
-        <MovieNav hanleFavoriteTabClick={hanleFavoriteTabClick} />
+        <MovieNav handleFavoriteTabClick={handleFavoriteTabClick} />
       </footer>
     </div>
   )

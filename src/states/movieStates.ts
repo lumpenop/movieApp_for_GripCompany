@@ -40,3 +40,8 @@ export const movieSortTitle = atom<string>({
   key: '#movieSortTitle',
   default: '오름차순',
 })
+
+export const movieSearchValue = atom<string>({
+  key: '#movieSearcValue',
+  default: '',
+})

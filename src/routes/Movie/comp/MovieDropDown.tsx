@@ -1,17 +1,31 @@
 import { SetStateAction, useEffect, useState } from 'react'
-import { useMount } from 'react-use'
 
 import styles from '../movie.module.scss'
 
 import { useRecoil } from 'hooks/state'
-import { IMovie } from 'types/movie'
-
+import { favoSort } from 'services/getMovie'
 import { favoriteData, movieSortYear, movieSortTitle } from 'states/movieStates'
 
 const MovieDropDown = () => {
   const [favoData, setFavoData] = useRecoil(favoriteData)
   const [year, setYear] = useRecoil(movieSortYear)
   const [title, setTitle] = useRecoil(movieSortTitle)
+
+  const [didMount, setDidMount] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (didMount) {
+      setFavoData(favoSort(year, favoData))
+    }
+    setDidMount(true)
+  }, [year])
+
+  useEffect(() => {
+    if (didMount) {
+      setFavoData(favoSort(title, favoData))
+    }
+    setDidMount(true)
+  }, [title])
 
   const handleYearSelect = (event: { currentTarget: { value: SetStateAction<string> } }) => {
     setYear(event.currentTarget.value)

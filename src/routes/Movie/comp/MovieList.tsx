@@ -1,12 +1,12 @@
 import styles from '../movie.module.scss'
+import { cx } from 'styles'
 
 import { IMovie } from 'types/movie.d'
 
-import { useRecoil } from 'hooks/state'
 import { movieClickState, movieClickedIdxState } from 'states/movieStates'
-import store from 'storejs'
+import { useRecoil } from 'hooks/state'
 
-import { cx } from 'styles'
+import store from 'storejs'
 
 interface Props {
   data: IMovie[]
