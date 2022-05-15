@@ -10,4 +10,4 @@
 - 즐겨찾기
 - 무한 스크롤
 
-https://movie-app-five-zeta.vercel.app/favorite
+https://movie-app-five-zeta.vercel.app/
