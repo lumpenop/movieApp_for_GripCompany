@@ -15,25 +15,14 @@ https://movie-app-five-zeta.vercel.app/
 
 ## 폴더 구조
 📦routes
-
  ┣ 📂Movie
- 
  ┃ ┣ 📂comp
- 
  ┃ ┃ ┣ 📜Header.tsx
-
  ┃ ┃ ┣ 📜MovieDropDown.tsx
-
  ┃ ┃ ┣ 📜MovieList.tsx
-
  ┃ ┃ ┣ 📜MovieModal.tsx
-
  ┃ ┃ ┗ 📜MovieNav.tsx
-
  ┃ ┣ 📜Movie.module.scss
-
  ┃ ┗ 📜index.tsx
-
  ┣ 📜Routes.module.scss
-
  ┗ 📜index.jsx
