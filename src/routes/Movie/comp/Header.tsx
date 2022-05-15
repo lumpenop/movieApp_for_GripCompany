@@ -1,7 +1,7 @@
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import styles from '../movie.module.scss'
+import styles from '../Movie.module.scss'
 import { FormEventHandler } from 'react'
 import { useRecoil } from 'hooks/state'
 import { movieSearchValue } from 'states/movieStates'

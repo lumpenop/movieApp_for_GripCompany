@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom'
 
 import store from 'storejs'
 
-import styles from './movie.module.scss'
+import styles from './Movie.module.scss'
 import { cx } from 'styles'
 
 import MovieList from './comp/MovieList'

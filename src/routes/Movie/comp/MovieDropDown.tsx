@@ -1,6 +1,6 @@
 import { SetStateAction, useEffect, useState } from 'react'
 
-import styles from '../movie.module.scss'
+import styles from '../Movie.module.scss'
 
 import { useRecoil } from 'hooks/state'
 import { favoSort } from 'services/getMovie'

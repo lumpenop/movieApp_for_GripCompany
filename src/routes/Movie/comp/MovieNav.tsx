@@ -1,4 +1,4 @@
-import styles from '../movie.module.scss'
+import styles from '../Movie.module.scss'
 import { cx } from 'styles'
 
 import { useRecoil } from 'hooks/state'
