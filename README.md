@@ -1,7 +1,7 @@
 # 그립컴퍼니 영화 검색 앱
-- 영화 api를 호출하여 검색 후 즐겨찾기로 등록, 삭제 할 수 있는 React App
-
 https://movie-app-five-zeta.vercel.app/
+
+- 영화 api를 호출하여 검색 후 즐겨찾기로 등록, 삭제 할 수 있는 React App
 
 ## 개발환경
 - React 18.1.0
