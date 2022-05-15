@@ -14,15 +14,5 @@ https://movie-app-five-zeta.vercel.app/
 - 무한 스크롤
 
 ## 폴더 구조
-routes
- ┣ Movie
- ┃ ┣ comp
- ┃ ┃ ┣ Header.tsx
- ┃ ┃ ┣ MovieDropDown.tsx
- ┃ ┃ ┣ MovieList.tsx
- ┃ ┃ ┣ MovieModal.tsx
- ┃ ┃ ┗ MovieNav.tsx
- ┃ ┣ Movie.module.scss
- ┃ ┗ index.tsx
- ┣ Routes.module.scss
- ┗ index.jsx
+<img width="219" alt="image" src="https://user-images.githubusercontent.com/68418005/168469033-fbc37eaa-aa01-4d25-903a-1c70671cbba4.png">
+
